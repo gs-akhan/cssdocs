@@ -1,0 +1,29 @@
+{
+  "name": "cssdocs",
+  "version": "0.0.1",
+  "description": "Script to generate CSSDOCS",
+  "main": "index.js",
+  "dependencies": {
+    "heapdump": "^0.3.5",
+    "async": "^0.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gs-akhan/cssdocs.git"
+  },
+  "keywords": [
+    "css",
+    "docs",
+    "doc"
+  ],
+  "author": "Azhar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gs-akhan/cssdocs/issues"
+  },
+  "homepage": "https://github.com/gs-akhan/cssdocs"
+}
