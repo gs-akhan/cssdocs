@@ -4,6 +4,7 @@
   "description": "Script to generate CSSDOCS",
   "main": "index.js",
   "dependencies": {
+    "async": "^0.9.0"
   },
   "devDependencies": {},
   "scripts": {

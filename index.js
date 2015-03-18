@@ -1,25 +1,17 @@
+"use strict"
 
 var async = require('async');
 var fs = require('fs');
 var path = require('path');
-var destFile = fs.createWriteStream('./stylesheet.css', {
-	flag : 'a+',
-	encoding : 'utf-8'
-});
 var regexForImage = /^.*\/.*\.(png|jpeg|jpg|gif)$/;
 var regexForCSS  = /^.*\/.*\.css$/;
 var allImages = [];
 var allCSSFiles = [];
 var imageToFile = [];
 var stream = require('stream');
-var liner = stream.Transform({objectMode : true});
 var counter = 0;
-require('events').EventEmitter.prototype._maxListeners = 100;
-
 
 initLoop('./GSAppCSS');
-
-
 
 function initLoop(fileName) {
 	
@@ -34,11 +26,11 @@ function initLoop(fileName) {
 				})).then(function(data) {
 					data = data.filter(function(item) {return item;});
 
-					var filesArray = data.filter(function(item) {
+					let filesArray = data.filter(function(item) {
 						return item.type === 'file';
 					});
 					
-					var foldersArray = data.filter(function(item) {
+					let foldersArray = data.filter(function(item) {
 						return item.type === 'folder';
 					});
 
@@ -46,8 +38,6 @@ function initLoop(fileName) {
 					foldersArray = foldersArray.map(function(item) {return item.path});
 
 					foldersArray.forEach(function(item) {
-						//destFile.write('Hello world \n');
-						//console.log(item);
 						initLoop(item);
 					});
 
@@ -98,7 +88,7 @@ function readFilesInFolder(file) {
 
 function promoiseStream(fileName) {
 	return new Promise(function(resolve, reject) {
-		var readstream = fs.createReadStream(fileName);
+		let readstream = fs.createReadStream(fileName);
 		
 			readstream.on('data', function(data) {
 				destFile.write(data.toString());				
@@ -113,10 +103,10 @@ function promoiseStream(fileName) {
 function matchImagesInCSS(fileName, content) {
 	console.log(counter++, fileName);
 	allImages.forEach(function(img) {
-		var imgName = img.split('/');
+		let imgName = img.split('/');
 		imgName = imgName[imgName.length -1];
-		var imageRegex = new RegExp('.*{.*'+imgName+'.*}');
-		var matchedContent = content.match(imageRegex);
+		let imageRegex = new RegExp('.*{.*'+imgName+'.*}');
+		let matchedContent = content.match(imageRegex);
 		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
 			imageToFile.push(imgName + "=======>"+ fileName + "======>" +matchedContent);	
@@ -127,16 +117,16 @@ function matchImagesInCSS(fileName, content) {
 
 
 function composedReaders() {
-	var toExcecArr =[];
+	let toExcecArr =[];
 	allCSSFiles.forEach(function(file, iter) {
 		toExcecArr.push(function(callback) {
 			 
-			 var reg = /.*emailbuilder\.min\.css/
+			 let reg = /.*emailbuilder\.min\.css/
 			 if(file.match(reg)) callback();
 			 	
 
 			 setImmediate(function() {
-			 	var stream = fs.createReadStream(file);
+			 	let stream = fs.createReadStream(file);
 			 		stream.on('data', function(chunk) {
 			 			matchImagesInCSS(file, chunk.toString('utf8'));
 			 		});
@@ -144,23 +134,18 @@ function composedReaders() {
 			 			callback();
 			 		});
 			 });
-		    
-
-			// var rStream = fs.createReadStream(file);
-			// var imageRegex = new RegExp('.*{.*'+file+'.*}');
-			// rStream.on('data', function(chunk) {
-			// 	var content = chunk.toString("utf-8");
-			// 	if(content.match(imageRegex)) {
-			// 		imageToFile.push('found');
-			// 	}
-			// });
-			
-			// rStream.on('end', function() {
-			// 	console.log('we are ')
-			// 	rStream.close();
-			// 	//console.log('fone');
-			// 	callback(null);
-			// });
+		  	/*
+		  	setImmediate(function() {
+			 	
+			 	fs.readFile(file, "utf8", function (err, data) {
+			        if (err) throw err;
+			        else {
+			        	matchImagesInCSS(file, data.toString('utf8'));
+			        	callback();
+			        }
+			     });
+			 });
+			**/
 		});	
 	});
 
