@@ -116,10 +116,10 @@ function matchImagesInCSS(fileName, content) {
 		var imgName = img.split('/');
 		imgName = imgName[imgName.length -1];
 		var imageRegex = new RegExp('.*{.*'+imgName+'.*}');
-
-		if(content.match(imageRegex)) {
+		var matchedContent = content.match(imageRegex);
+		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
-			imageToFile.push(imgName + "=======>"+ fileName);	
+			imageToFile.push(imgName + "=======>"+ fileName + "======>" +matchedContent);	
 		}	
 	});
 };
@@ -133,15 +133,16 @@ function composedReaders() {
 			 
 			 var reg = /.*emailbuilder\.min\.css/
 			 if(file.match(reg)) callback();
-			 setImmediate(function() {
 			 	
-			 	fs.readFile(file, "utf8", function (err, data) {
-			        if (err) throw err;
-			        else {
-			        	matchImagesInCSS(file, data.toString('utf8'));
-			        	callback();
-			        }
-			     });
+
+			 setImmediate(function() {
+			 	var stream = fs.createReadStream(file);
+			 		stream.on('data', function(chunk) {
+			 			matchImagesInCSS(file, chunk.toString('utf8'));
+			 		});
+			 		stream.on('end', function() {
+			 			callback();
+			 		});
 			 });
 		    
 
