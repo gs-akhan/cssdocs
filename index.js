@@ -24,8 +24,6 @@ function initLoop(fileName) {
 				Promise.all(files.map(function(file) {
 					return readFilesInFolder(fileName+'/'+file);
 				})).then(function(data) {
-					data = data.filter(function(item) {return item;});
-
 					let filesArray = data.filter(function(item) {
 						return item.type === 'file';
 					});
@@ -34,15 +32,14 @@ function initLoop(fileName) {
 						return item.type === 'folder';
 					});
 
-					filesArray = filesArray.map(function(item) {return item.path});
-					foldersArray = foldersArray.map(function(item) {return item.path});
-
 					foldersArray.forEach(function(item) {
-						initLoop(item);
+						initLoop(item.path);
 					});
+					
+					
 
-					filesArray.forEach(function(path) {
-						testAndAddIntoImages(path);
+					filesArray.forEach(function(item) {
+						testAndAddIntoImages(item);
 					});
 				})
 				
@@ -56,12 +53,18 @@ function initLoop(fileName) {
 Check a filename and adds it into allImages Array
 **/
 
-function testAndAddIntoImages(filePath) {
-	if(filePath.match(regexForImage)) {
-		allImages.push(filePath);
+function testAndAddIntoImages(fileStats) {
+	if(fileStats.path.match(regexForImage)) {
+		allImages.push({
+			path : fileStats.path,
+			size : fileStats.size
+		});
 	}
-	else if(filePath.match(regexForCSS)) {
-		allCSSFiles.push(filePath);
+	else if(fileStats.path.match(regexForCSS)) {
+		allCSSFiles.push({
+			path : fileStats.path,
+			size : fileStats.size
+		});
 	}
 
 }
@@ -70,16 +73,18 @@ function testAndAddIntoImages(filePath) {
 function readFilesInFolder(file) {
 	return new Promise(function(resolve, reject) {
 		fs.stat(file, function(err, stats) {
+			//console.log(stats.size)
 			if(stats && stats.isDirectory()) {
 				resolve({
 					type : 'folder',
-					path : file
+					path : file,
 				});
 			}
 			else if(stats && stats.isFile()) {
 				resolve({
 					type : 'file',
-					path : file
+					path : file,
+					size : stats['size']
 				});
 			}
 		});
@@ -101,15 +106,19 @@ function promoiseStream(fileName) {
 
 
 function matchImagesInCSS(fileName, content) {
-	console.log(counter++, fileName);
+	
 	allImages.forEach(function(img) {
-		let imgName = img.split('/');
+		let imgName = img.path.split('/');
 		imgName = imgName[imgName.length -1];
 		let imageRegex = new RegExp('.*{.*'+imgName+'.*}');
 		let matchedContent = content.match(imageRegex);
 		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
-			imageToFile.push(imgName + "=======>"+ fileName + "======>" +matchedContent);	
+			imageToFile.push({
+				imgName :  imgName,
+				fileName : fileName,
+				matchedContent : matchedContent
+			});	
 		}	
 	});
 };
@@ -120,17 +129,18 @@ function composedReaders() {
 	let toExcecArr =[];
 	allCSSFiles.forEach(function(file, iter) {
 		toExcecArr.push(function(callback) {
-			 
 			 let reg = /.*emailbuilder\.min\.css/
-			 if(file.match(reg)) callback();
+			 if(file.path.match(reg)) return callback();
 			 	
 
 			 setImmediate(function() {
-			 	let stream = fs.createReadStream(file);
-			 		stream.on('data', function(chunk) {
-			 			matchImagesInCSS(file, chunk.toString('utf8'));
+			 	let _rstream = fs.createReadStream(file.path);
+			 		_rstream.on('data', function(chunk) {
+			 			callback();
+			 			matchImagesInCSS(file.path, chunk.toString('utf8'));
 			 		});
-			 		stream.on('end', function() {
+			 		_rstream.on('end', function() {
+			 			console.log(counter++);
 			 			callback();
 			 		});
 			 });
@@ -163,12 +173,16 @@ function createDocs() {
 }
 
 process.on('beforeExit', function() {
-	//console.log(allImages);
+	console.log(allImages.length + " Total Images");
 
-	console.log(allCSSFiles);
-	
+	console.log(allCSSFiles.length + "Total CSS");
+
+	console.log(allCSSFiles[0]);
+
+
+	console.log("******** CREATING DOCS ******");
 	createDocs().then(function() {
-		console.log(imageToFile);
+		console.log(imageToFile.length);
 		process.exit();	
 	});
 
