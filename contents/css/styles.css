@@ -1,0 +1,21 @@
+.section1 {
+	margin-bottom: 20px;
+}
+.results_table {
+
+}
+thead tr th:nth-child(1), tbody tr th:nth-child(1) {
+	width: 100px;
+}
+thead tr th:nth-child(2), tbody tr th:nth-child(2) {
+	width: 175px;	
+}
+thead tr th:nth-child(3), tbody tr th:nth-child(3) {
+	width: 834px;
+}
+thead tr th:nth-child(4), tbody tr th:nth-child(4) {
+	width: 83px;
+}
+tbody tr td:nth-child(2) {
+	color: orangered;
+}
