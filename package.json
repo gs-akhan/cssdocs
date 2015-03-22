@@ -4,7 +4,9 @@
   "description": "Script to generate CSSDOCS",
   "main": "index.js",
   "dependencies": {
-    "async": "^0.9.0"
+    "async": "^0.9.0",
+    "ejs": "^2.3.1",
+    "express": "^4.12.3"
   },
   "devDependencies": {},
   "scripts": {
