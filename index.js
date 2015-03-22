@@ -1,25 +1,17 @@
+"use strict"
 
 var async = require('async');
 var fs = require('fs');
 var path = require('path');
-var destFile = fs.createWriteStream('./stylesheet.css', {
-	flag : 'a+',
-	encoding : 'utf-8'
-});
 var regexForImage = /^.*\/.*\.(png|jpeg|jpg|gif)$/;
 var regexForCSS  = /^.*\/.*\.css$/;
 var allImages = [];
 var allCSSFiles = [];
 var imageToFile = [];
 var stream = require('stream');
-var liner = stream.Transform({objectMode : true});
 var counter = 0;
-require('events').EventEmitter.prototype._maxListeners = 100;
-
 
 initLoop('./GSAppCSS');
-
-
 
 function initLoop(fileName) {
 	
@@ -32,27 +24,22 @@ function initLoop(fileName) {
 				Promise.all(files.map(function(file) {
 					return readFilesInFolder(fileName+'/'+file);
 				})).then(function(data) {
-					data = data.filter(function(item) {return item;});
-
-					var filesArray = data.filter(function(item) {
+					let filesArray = data.filter(function(item) {
 						return item.type === 'file';
 					});
 					
-					var foldersArray = data.filter(function(item) {
+					let foldersArray = data.filter(function(item) {
 						return item.type === 'folder';
 					});
 
-					filesArray = filesArray.map(function(item) {return item.path});
-					foldersArray = foldersArray.map(function(item) {return item.path});
-
 					foldersArray.forEach(function(item) {
-						//destFile.write('Hello world \n');
-						//console.log(item);
-						initLoop(item);
+						initLoop(item.path);
 					});
+					
+					
 
-					filesArray.forEach(function(path) {
-						testAndAddIntoImages(path);
+					filesArray.forEach(function(item) {
+						testAndAddIntoImages(item);
 					});
 				})
 				
@@ -66,12 +53,18 @@ function initLoop(fileName) {
 Check a filename and adds it into allImages Array
 **/
 
-function testAndAddIntoImages(filePath) {
-	if(filePath.match(regexForImage)) {
-		allImages.push(filePath);
+function testAndAddIntoImages(fileStats) {
+	if(fileStats.path.match(regexForImage)) {
+		allImages.push({
+			path : fileStats.path,
+			size : fileStats.size
+		});
 	}
-	else if(filePath.match(regexForCSS)) {
-		allCSSFiles.push(filePath);
+	else if(fileStats.path.match(regexForCSS)) {
+		allCSSFiles.push({
+			path : fileStats.path,
+			size : fileStats.size
+		});
 	}
 
 }
@@ -80,16 +73,18 @@ function testAndAddIntoImages(filePath) {
 function readFilesInFolder(file) {
 	return new Promise(function(resolve, reject) {
 		fs.stat(file, function(err, stats) {
+			//console.log(stats.size)
 			if(stats && stats.isDirectory()) {
 				resolve({
 					type : 'folder',
-					path : file
+					path : file,
 				});
 			}
 			else if(stats && stats.isFile()) {
 				resolve({
 					type : 'file',
-					path : file
+					path : file,
+					size : stats['size']
 				});
 			}
 		});
@@ -98,7 +93,7 @@ function readFilesInFolder(file) {
 
 function promoiseStream(fileName) {
 	return new Promise(function(resolve, reject) {
-		var readstream = fs.createReadStream(fileName);
+		let readstream = fs.createReadStream(fileName);
 		
 			readstream.on('data', function(data) {
 				destFile.write(data.toString());				
@@ -111,15 +106,19 @@ function promoiseStream(fileName) {
 
 
 function matchImagesInCSS(fileName, content) {
-	console.log(counter++, fileName);
+	
 	allImages.forEach(function(img) {
-		var imgName = img.split('/');
+		let imgName = img.path.split('/');
 		imgName = imgName[imgName.length -1];
-		var imageRegex = new RegExp('.*{.*'+imgName+'.*}');
-
-		if(content.match(imageRegex)) {
+		let imageRegex = new RegExp('.*{.*'+imgName+'.*}');
+		let matchedContent = content.match(imageRegex);
+		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
-			imageToFile.push(imgName + "=======>"+ fileName);	
+			imageToFile.push({
+				imgName :  imgName,
+				fileName : fileName,
+				matchedContent : matchedContent
+			});	
 		}	
 	});
 };
@@ -127,13 +126,26 @@ function matchImagesInCSS(fileName, content) {
 
 
 function composedReaders() {
-	var toExcecArr =[];
+	let toExcecArr =[];
 	allCSSFiles.forEach(function(file, iter) {
 		toExcecArr.push(function(callback) {
-			 
-			 var reg = /.*emailbuilder\.min\.css/
-			 if(file.match(reg)) callback();
+			 let reg = /.*emailbuilder\.min\.css/
+			 if(file.path.match(reg)) return callback();
+			 	
+
 			 setImmediate(function() {
+			 	let _rstream = fs.createReadStream(file.path);
+			 		_rstream.on('data', function(chunk) {
+			 			callback();
+			 			matchImagesInCSS(file.path, chunk.toString('utf8'));
+			 		});
+			 		_rstream.on('end', function() {
+			 			console.log(counter++);
+			 			callback();
+			 		});
+			 });
+		  	/*
+		  	setImmediate(function() {
 			 	
 			 	fs.readFile(file, "utf8", function (err, data) {
 			        if (err) throw err;
@@ -143,23 +155,7 @@ function composedReaders() {
 			        }
 			     });
 			 });
-		    
-
-			// var rStream = fs.createReadStream(file);
-			// var imageRegex = new RegExp('.*{.*'+file+'.*}');
-			// rStream.on('data', function(chunk) {
-			// 	var content = chunk.toString("utf-8");
-			// 	if(content.match(imageRegex)) {
-			// 		imageToFile.push('found');
-			// 	}
-			// });
-			
-			// rStream.on('end', function() {
-			// 	console.log('we are ')
-			// 	rStream.close();
-			// 	//console.log('fone');
-			// 	callback(null);
-			// });
+			**/
 		});	
 	});
 
@@ -177,12 +173,16 @@ function createDocs() {
 }
 
 process.on('beforeExit', function() {
-	//console.log(allImages);
+	console.log(allImages.length + " Total Images");
 
-	console.log(allCSSFiles);
-	
+	console.log(allCSSFiles.length + "Total CSS");
+
+	console.log(allCSSFiles[0]);
+
+
+	console.log("******** CREATING DOCS ******");
 	createDocs().then(function() {
-		console.log(imageToFile);
+		console.log(imageToFile.length);
 		process.exit();	
 	});
 
