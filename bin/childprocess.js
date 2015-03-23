@@ -15,7 +15,7 @@ var http = require("http");
 
 
 
-initLoop('./GSAppCSS');
+initLoop('./'+process.argv[2]);
 
 function initLoop(fileName) {
 	

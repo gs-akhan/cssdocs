@@ -1,4 +1,5 @@
-"use strict"
+#!/usr/bin/env node
+'use strict';
 
 var counter = 0;
 var http = require("http");
@@ -14,7 +15,7 @@ if(!process.argv[2]) {
 }
 
 var spawn = require('child_process').spawn;
-var child = spawn("node" , ["childprocess.js", process.argv[2]]);
+var child = spawn("node" , ["./bin/childprocess.js", process.argv[2]]);
 
 child.stdout.on('data', function(data) {
 	var data = data.toString('utf8');
@@ -28,10 +29,10 @@ child.stderr.on('data', function(data) {
 
 child.on('exit', function() {
 	let app = express();
-	app.set('views', path.join(__dirname, 'views'));
+	app.set('views', path.join(__dirname, './../views'));
 	app.set('view engine', 'ejs');
-	app.use(express.static(path.join(__dirname, 'public')));
-	app.use(express.static(path.join(__dirname, process.argv[2])));
+	app.use(express.static(path.join(__dirname, './../public')));
+	app.use(express.static(path.join(__dirname, './../'+process.argv[2])));
 	
 	app.get('/', function(req, res) {
 		res.render("index");

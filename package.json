@@ -21,6 +21,9 @@
     "docs",
     "doc"
   ],
+  "bin" : {
+    "cssdocs" : "./bin/index.js"
+    },
   "author": "Azhar",
   "license": "MIT",
   "bugs": {
