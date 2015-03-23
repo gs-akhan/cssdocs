@@ -8,7 +8,6 @@
 	<body>
 		<!-- section 1-->
 		<div class="container" ng-controller = "MainCtrl">
-		{{name}}
 			<div class="section1 row">
 				<!-- heading-->
 				<div class="page-header">
@@ -38,14 +37,14 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat = "fileStats in imageToFile">
-							<td><img src="./images/delete_icon.png" width="50px" height="50px"/></td>
+							<td><img src="{{fileStats.imgPath}}" width="50px" height="50px"/></td>
 							<td>{{fileStats.matchedContent[0].split("{")[0]}}</td>
 							<td>
 								<a target="_blank" href="javascript:void(0)">
 									<i style="width: 876px">{{fileStats.fileName}}</i>
 								</a>
 							</td>
-							<td>{{fileStats.size/1000}}</td>
+							<td>{{fileStats.fileSize/1000}}</td>
 						</tr>
 					</tbody>
 				</table>

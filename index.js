@@ -7,12 +7,15 @@ var path = require('path');
 var fs = require('fs');
 
 //initLoop('./GSAppCSS');
-var spawn = require('child_process').spawn;
-var child = spawn("node" , ["childprocess.js"]);
+
 
 if(!process.argv[2]) {
 	throw new Error("Please provide folder name");
 }
+
+var spawn = require('child_process').spawn;
+var child = spawn("node" , ["childprocess.js", process.argv[2]]);
+
 child.stdout.on('data', function(data) {
 	var data = data.toString('utf8');
 

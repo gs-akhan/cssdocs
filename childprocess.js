@@ -109,7 +109,7 @@ function promoiseStream(fileName) {
 };
 
 
-function matchImagesInCSS(fileName, content) {
+function matchImagesInCSS(file, content) {
 	
 	allImages.forEach(function(img) {
 		let imgName = img.path.split('/');
@@ -119,8 +119,10 @@ function matchImagesInCSS(fileName, content) {
 		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
 			imageToFile.push({
+				imgPath : img.path.replace("./"+process.argv[2], ""),
 				imgName :  imgName,
-				fileName : fileName,
+				fileName : file.path,
+				fileSize : file.size,
 				matchedContent : matchedContent
 			});	
 		}	
@@ -141,7 +143,7 @@ function composedReaders() {
 			 	let _rstream = fs.createReadStream(file.path);
 			 		_rstream.on('data', function(chunk) {
 			 			callback();
-			 			matchImagesInCSS(file.path, chunk.toString('utf8'));
+			 			matchImagesInCSS(file, chunk.toString('utf8'));
 			 		});
 			 		_rstream.on('end', function() {
 			 			//console.log(counter++);
