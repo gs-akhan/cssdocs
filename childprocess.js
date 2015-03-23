@@ -166,14 +166,24 @@ function createDocs() {
 }
 
 process.on('beforeExit', function() {
-	
+		
+
 	console.log("*******GENERATING DOCS*********");
 	createDocs().then(function() {
-		console.log("IMAGE REFERENCES : " + imageToFile.length);
-		console.log("*******DOCS GENERATED*********");
+		try {
+			console.log("*******DOCS GENERATED*********");
+			fs.writeFileSync("./temp.json", JSON.stringify({
+					allImages : allImages,
+					allCSSFiles : allCSSFiles,
+					imageToFile : imageToFile
+				}));
 
-		process.exit();
+			process.exit();	
+		}
+		catch(e) {
+			console.log(e.message);
+			process.exit();
+		}
 		
 	});
-
 });

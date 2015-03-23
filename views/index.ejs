@@ -1,11 +1,14 @@
-<html>
+<html ng-app = "cssDocs">
 	<head>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css /">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" href="css/styles.css" />
+		<script type="text/javascript" src = "angular.min.js"></script>
+		<script type="text/javascript" src = "app.js"></script>
 	</head>
 	<body>
 		<!-- section 1-->
-		<div class="container">
+		<div class="container" ng-controller = "MainCtrl">
+		{{name}}
 			<div class="section1 row">
 				<!-- heading-->
 				<div class="page-header">
@@ -34,15 +37,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+						<tr ng-repeat = "fileStats in imageToFile">
 							<td><img src="./images/delete_icon.png" width="50px" height="50px"/></td>
-							<td>div.del-btn</td>
+							<td>{{fileStats.matchedContent[0].split("{")[0]}}</td>
 							<td>
-								<a target="_blank" href="C:\Users\Gainsight\https\files\public\UI\GSAppCSS\css\adoption\adoption-style.css">
-									<i style="width: 876px">C:\Users\Gainsight\https\files\public\UI\GSAppCSS\css\adoption\adoption-style.css</i>
+								<a target="_blank" href="javascript:void(0)">
+									<i style="width: 876px">{{fileStats.fileName}}</i>
 								</a>
 							</td>
-							<td>1</td>
+							<td>{{fileStats.size/1000}}</td>
 						</tr>
 					</tbody>
 				</table>
