@@ -9,17 +9,15 @@ var fs = require('fs');
 
 //initLoop('./GSAppCSS');
 
-
 if(!process.argv[2]) {
 	throw new Error("Please provide folder name");
 }
 
 var spawn = require('child_process').spawn;
-var child = spawn("node" , ["./bin/childprocess.js", process.argv[2]]);
+var child = spawn("node" , [path.join(__dirname,"../childprocess.js"), process.argv[2]]);
 
 child.stdout.on('data', function(data) {
 	var data = data.toString('utf8');
-
 	console.log(data);
 });
 child.stderr.on('data', function(data) {
@@ -28,12 +26,12 @@ child.stderr.on('data', function(data) {
 
 
 child.on('exit', function() {
-	let app = express();
+	var app = express();
 	app.set('views', path.join(__dirname, './../views'));
 	app.set('view engine', 'ejs');
 	app.use(express.static(path.join(__dirname, './../public')));
 	app.use(express.static(path.join(__dirname, './../'+process.argv[2])));
-	
+		
 	app.get('/', function(req, res) {
 		res.render("index");
 	});
@@ -43,7 +41,8 @@ child.on('exit', function() {
 		rStream.pipe(res);
 	});
 	
-	app.listen('8080', function() {
+	app.listen('8090', function() {
 		console.log("SERVER STARTED");
+		console.log("Browse http://localhost:8080 to view the docs.");
 	});
 });

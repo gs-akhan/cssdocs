@@ -17,7 +17,7 @@
 				<div class="row">
 					<div class="col-lg-6">
 					    <div class="input-group">
-					      <input type="text" class="form-control" placeholder="Search for...">
+					      <input type="text" class="form-control" placeholder="Search for..." ng-model="search">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button">Go!</button>
 					      </span>
@@ -29,22 +29,22 @@
 				<table class="results_table table table-bordered">
 					<thead>
 						<tr>
-							<th id="image_head">Image</th>
-							<th>CSS selector</th>
-							<th>File Location</th>
-							<th>Size(KB)</th>
+							<th id="image_head" class="col-md-2">Image</th>
+							<th class="col-md-6">CSS selector</th>
+							<th class="col-md-2">File Location</th>
+							<th class="col-md-2">Size(KB)</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat = "fileStats in imageToFile">
-							<td><img src="{{fileStats.imgPath}}" width="50px" height="50px"/></td>
-							<td>{{fileStats.matchedContent[0].split("{")[0]}}</td>
-							<td>
+						<tr ng-repeat = "fileStats in imageToFile | filter:search">
+							<td class="col-md-2"><img src="{{fileStats.imgPath}}" width="50px" height="50px"/></td>
+							<td class="col-md-6">{{fileStats.matchedContent[0].split("{")[0]}}</td>
+							<td class="col-md-2">
 								<a target="_blank" href="javascript:void(0)">
 									<i style="width: 876px">{{fileStats.fileName}}</i>
 								</a>
 							</td>
-							<td>{{fileStats.fileSize/1000}}</td>
+							<td class="col-md-2">{{fileStats.fileSize/1000}}</td>
 						</tr>
 					</tbody>
 				</table>

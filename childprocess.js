@@ -28,11 +28,11 @@ function initLoop(fileName) {
 				Promise.all(files.map(function(file) {
 					return readFilesInFolder(fileName+'/'+file);
 				})).then(function(data) {
-					let filesArray = data.filter(function(item) {
+					var filesArray = data.filter(function(item) {
 						return item.type === 'file';
 					});
 					
-					let foldersArray = data.filter(function(item) {
+					var foldersArray = data.filter(function(item) {
 						return item.type === 'folder';
 					});
 
@@ -40,8 +40,6 @@ function initLoop(fileName) {
 						initLoop(item.path);
 					});
 					
-					
-
 					filesArray.forEach(function(item) {
 						testAndAddIntoImages(item);
 					});
@@ -97,7 +95,7 @@ function readFilesInFolder(file) {
 
 function promoiseStream(fileName) {
 	return new Promise(function(resolve, reject) {
-		let readstream = fs.createReadStream(fileName);
+		var readstream = fs.createReadStream(fileName);
 		
 			readstream.on('data', function(data) {
 				destFile.write(data.toString());				
@@ -112,10 +110,10 @@ function promoiseStream(fileName) {
 function matchImagesInCSS(file, content) {
 	
 	allImages.forEach(function(img) {
-		let imgName = img.path.split('/');
+		var imgName = img.path.split('/');
 		imgName = imgName[imgName.length -1];
-		let imageRegex = new RegExp('.*{.*'+imgName+'.*}');
-		let matchedContent = content.match(imageRegex);
+		var imageRegex = new RegExp('.*{.*'+imgName+'.*}');
+		var matchedContent = content.match(imageRegex);
 		if(matchedContent) {
 			//console.log(imgName + "=======>"+ fileName);
 			imageToFile.push({
@@ -132,21 +130,21 @@ function matchImagesInCSS(file, content) {
 
 
 function composedReaders() {
-	let toExcecArr =[];
+	var toExcecArr =[];
 	allCSSFiles.forEach(function(file, iter) {
 		toExcecArr.push(function(callback) {
-			 let reg = /.*emailbuilder\.min\.css/
+			 var reg = /.*emailbuilder\.min\.css/
 			 if(file.path.match(reg)) return callback();
 			 	
 
 			 setImmediate(function() {
-			 	let _rstream = fs.createReadStream(file.path);
+			 	var _rstream = fs.createReadStream(file.path);
 			 		_rstream.on('data', function(chunk) {
+			 			console.log("<Processing : "+file.path + " >");
+						matchImagesInCSS(file, chunk.toString('utf8'));
 			 			callback();
-			 			matchImagesInCSS(file, chunk.toString('utf8'));
 			 		});
 			 		_rstream.on('end', function() {
-			 			//console.log(counter++);
 			 			callback();
 			 		});
 			 });
@@ -161,7 +159,6 @@ function createDocs() {
 
 	return new Promise(function(resolve, reject) {
 		async.parallel(composedReaders(), function() {
-			//console.log('We are all done');
 			resolve();
 		});
 	});
