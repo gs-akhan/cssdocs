@@ -4,7 +4,9 @@
 	App.controller('MainCtrl', ['$scope', '$http', function($scope, $http){
 		$http.get('/getFiles').success(function(data){
 			console.log(data);	
-			$scope.imageToFile = data.imageToFile 
+			$scope.allImages = data.allImages;
+			$scope.allCSSFiles = data.allCSSFiles;
+ 			$scope.imageToFile = data.imageToFile 
 		});
 	}]);
 })();

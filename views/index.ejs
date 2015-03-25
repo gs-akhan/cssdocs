@@ -1,38 +1,40 @@
 <html ng-app = "cssDocs">
+	<title>CSSDOCS | Simple As You Like</title>
 	<head>
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 		<link rel="stylesheet" href="css/styles.css" />
 		<script type="text/javascript" src = "angular.min.js"></script>
 		<script type="text/javascript" src = "app.js"></script>
 	</head>
-	<body>
+	<body ng-controller = "MainCtrl">
 		<!-- section 1-->
-		<div class="container" ng-controller = "MainCtrl">
+
+		<header>
+			<ul>
+				<li>CSS DOCS</li>
+				<li class = "metrics">CSS Files #{{allCSSFiles.length || 0}}</li>
+				<li class = "metrics">Images #{{allImages.length}}</li>
+			</ul>
+			
+		</header>
+		<div class="container">
 			<div class="section1 row">
-				<!-- heading-->
-				<div class="page-header">
-				  <h1>File seach</h1>
-				</div>
+				
 				<!-- search -->
-				<div class="row">
-					<div class="col-lg-6">
-					    <div class="input-group">
-					      <input type="text" class="form-control" placeholder="Search for..." ng-model="search">
-					      <span class="input-group-btn">
-					        <button class="btn btn-default" type="button">Go!</button>
-					      </span>
-					    </div><!-- /input-group -->
-					</div><!-- /.col-lg-6 -->
+				<div class="searchRow">
+					<div class = "searchWrapper">
+						<input type="text" class = "searchInput" placeholder = "Search Any Thing ...." ng-model = "search">
+					</div>
 				</div>
 			</div>
 			<div class="row">
-				<table class="results_table table table-bordered">
+				<table class="results_table table">
 					<thead>
 						<tr>
-							<th id="image_head" class="col-md-2">Image</th>
-							<th class="col-md-6">CSS selector</th>
-							<th class="col-md-2">File Location</th>
-							<th class="col-md-2">Size(KB)</th>
+							<th id="image_head">Image</th>
+							<th >CSS selector</th>
+							<th >File Location</th>
+							<th >Size(KB)</th>
 						</tr>
 					</thead>
 					<tbody>

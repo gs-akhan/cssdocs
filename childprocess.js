@@ -171,7 +171,7 @@ process.on('beforeExit', function() {
 	createDocs().then(function() {
 		try {
 			console.log("*******DOCS GENERATED*********");
-			fs.writeFileSync("./temp.json", JSON.stringify({
+			fs.writeFileSync(path.join(__dirname, "./temp.json"), JSON.stringify({
 					allImages : allImages,
 					allCSSFiles : allCSSFiles,
 					imageToFile : imageToFile

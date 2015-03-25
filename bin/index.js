@@ -37,7 +37,7 @@ child.on('exit', function() {
 	});
 
 	app.get('/getFiles', function(req, res) {
-		var rStream = fs.createReadStream("./temp.json");
+		var rStream = fs.createReadStream(path.join(__dirname, "./../temp.json"));
 		rStream.pipe(res);
 	});
 	
