@@ -39,7 +39,11 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat = "fileStats in imageToFile | filter:search">
-							<td class="col-md-2"><img src="{{fileStats.imgPath}}" width="50px" height="50px"/></td>
+							<td class="col-md-2">
+								<a href = "{{fileStats.imgPath}}" target="_blank">
+									<img src="{{fileStats.imgPath}}" width="50px" height="50px"/>
+								</a>
+							</td>
 							<td class="col-md-6">{{fileStats.matchedContent[0].split("{")[0]}}</td>
 							<td class="col-md-2">
 								<a target="_blank" href="javascript:void(0)">
