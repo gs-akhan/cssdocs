@@ -43,6 +43,6 @@ child.on('exit', function() {
 	
 	app.listen('8090', function() {
 		console.log("SERVER STARTED");
-		console.log("Browse http://localhost:8080 to view the docs.");
+		console.log("Browse http://localhost:8090 to view the docs.");
 	});
 });
