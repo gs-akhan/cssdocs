@@ -1,12 +1,13 @@
 {
   "name": "cssdocs",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Script to generate CSSDOCS",
   "main": "index.js",
   "dependencies": {
     "async": "^0.9.0",
     "ejs": "^2.3.1",
-    "express": "^4.12.3"
+    "express": "^4.12.3",
+    "update-notifier": "^0.3.1"
   },
   "devDependencies": {},
   "scripts": {
@@ -21,9 +22,10 @@
     "docs",
     "doc"
   ],
-  "bin" : {
-    "cssdocs" : "./bin/index.js"
-    },
+  "preferGlobal": "true",
+  "bin": {
+    "cssdocs": "./bin/index.js"
+  },
   "author": "Azhar",
   "license": "MIT",
   "bugs": {
